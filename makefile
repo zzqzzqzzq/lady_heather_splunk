@@ -1,6 +1,6 @@
 ###############################################################
 #							      #
-#	Lady Heather MAKEFILE for Linux or		      #
+#	Lady Heather MAKEFILE for Linux, FreeBSD, or	      #
 #	OS/X (with XQuartz X11 library) 		      #
 #							      #
 #							      #
@@ -16,7 +16,7 @@ CC = g++
 ifeq ($(OS),Linux)
 
 # WARNS = -Wno-write-strings 
-WARNS = -Wno-write-strings -Wall -Wno-unused-but-set-variable -Wno-unused-variable 
+WARNS = -Wno-write-strings -Wall -Wno-unused-but-set-variable -Wno-unused-variable -Wno-format-overflow
 
 all: heather
 
@@ -73,3 +73,35 @@ clean:
 endif
 
 
+
+#
+#  FreeBSD build
+#
+
+ifeq ($(OS),FreeBSD)
+CC = cc
+WARNS = -Wall -Wno-c++11-compat-deprecated-writable-strings
+INCLUDES = -I /usr/local/include
+LIBS = -L/usr/local/lib -lm -lX11
+
+.SUFFIXES:
+.SUFFIXES: .cpp .o
+
+.cpp.o:
+	$(CC) $(WARNS) $(INCLUDES) -c $< -o $@.new
+	mv $@.new $@
+
+SRCS = heather.cpp heathmsc.cpp heathui.cpp heathgps.cpp
+OBJS = $(SRCS:cpp=o)
+
+all: heather
+
+heather: $(OBJS)
+	$(CC) -o $@.new $(OBJS) $(LIBS)
+	mv $@.new $@
+
+$(OBJS): heather.ch heathfnt.ch makefile
+
+clean:
+	rm -f heather heather.new $(OBJS) $(OBJS:=.new)
+endif
