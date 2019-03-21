@@ -8986,6 +8986,7 @@ void kill_com(unsigned port, int why)
    if(port >= NUM_COM_PORTS) return;
 // if(debug_file) fprintf(debug_file, "kill com %d: %d\n", port,why);  
    com[port].port_used = 1;  // port has been closed
+   com[port].x_offset = 0;
 
    if(com[port].com_port > 0) {       // COM port in use: close it
       SetDtrLine(port, 0);
@@ -9260,7 +9261,7 @@ void sendout(unsigned port, unsigned char val, int eom_flag)
 {
 DWORD written;
 int flag;
-static S32 x = 0;    
+// static S32 x = 0;    
 
    // Ssend data to the receiver.  
    // We queue up data until end of message to reduce per-packet overhead.
@@ -9296,21 +9297,21 @@ if((port == RCVR_PORT) && (rcvr_type == TIDE_RCVR) && (enable_terminal == 0)) { 
 
    // we buffer up output chars until buffer full or end of message flag seen
    if(eom_flag == FLUSH_COM) {  // just send buffered chars
-      if(x == 0) return;   // nothing to flush
+      if(com[port].x_offset == 0) return;   // nothing to flush
    }
-   else com[port].xmit_buffer[x++] = val;  // add char to buffer
-   if((x < (S32) XMIT_BUF_SIZE) && (eom_flag == ADD_CHAR)) return;
+   else com[port].xmit_buffer[com[port].x_offset++] = val;  // add char to buffer
+   if((com[port].x_offset < (S32) XMIT_BUF_SIZE) && (eom_flag == ADD_CHAR)) return;
 
    update_pwm();   // if doing pwm temperature control
 
    if(com[port].com_port != 0) {       // COM port in use: send bytes via serial port
       if(hSerial[port] == INVALID_HANDLE_VALUE) return;
-      flag = WriteFile(hSerial[port], com[port].xmit_buffer, x, &written, NULL);
-      if(written == x) written = 1;
+      flag = WriteFile(hSerial[port], com[port].xmit_buffer, com[port].x_offset, &written, NULL);
+      if(written == com[port].x_offset) written = 1;
       else             written = 0;
    }
    else {                    // TCP connection: send byte via Winsock 
-      IPC[port]->send_block(com[port].xmit_buffer, x);
+      IPC[port]->send_block(com[port].xmit_buffer, com[port].x_offset);
 
       if(!IPC[port]->status()) {
          error_exit(24, IPC[port]->message);
@@ -9320,7 +9321,7 @@ if((port == RCVR_PORT) && (rcvr_type == TIDE_RCVR) && (enable_terminal == 0)) { 
       written = 1;
    }
 
-   x = 0;
+   com[port].x_offset = 0;
 
    if((flag == 0) || (written != 1)) {
       if(com_error_exit) {
@@ -9583,6 +9584,7 @@ void kill_com(unsigned port, int why)
    // close the serial communications device
    if(port >= NUM_COM_PORTS) return;
    com[port].port_used = 1;   // port has been closed
+   com[port].x_offset = 0;
 
    if(com[port].com_fd < 0) return;
 
@@ -9989,7 +9991,7 @@ void sendout(unsigned port, unsigned char val, int eom_flag)
 {
 unsigned long written;
 int flag;
-static long x = 0; 
+// static long x = 0; 
 
    // Ssend data to the receiver.  
    // We queue up data until end of message to reduce per-packet overhead.
@@ -10000,9 +10002,9 @@ static long x = 0;
    if((port == RCVR_PORT) && (rcvr_type == NO_RCVR) && (enable_terminal == 0)) { // alternate ready/not ready each check
       return;
    }
-if((port == RCVR_PORT) && (rcvr_type == TIDE_RCVR) && (enable_terminal == 0)) { 
+   if((port == RCVR_PORT) && (rcvr_type == TIDE_RCVR) && (enable_terminal == 0)) { 
       return;
-}
+   }
 
    if(com[port].com_fd < 0) return;
 
@@ -10024,24 +10026,24 @@ if((port == RCVR_PORT) && (rcvr_type == TIDE_RCVR) && (enable_terminal == 0)) {
 
    // we buffer up output chars until buffer full or end of message flag seen
    if(eom_flag == FLUSH_COM) {  // just send buffered chars
-      if(x == 0) return;   // nothing to flush
+      if(com[port].x_offset == 0) return;        // nothing to flush
    }
-   else com[port].xmit_buffer[x++] = val;  // add char to send buffer
+   else com[port].xmit_buffer[com[port].x_offset++] = val;  // add char to send buffer
 
-   if((x < (long) XMIT_BUF_SIZE) && (eom_flag == ADD_CHAR)) return;
+   if((com[port].x_offset < (long) XMIT_BUF_SIZE) && (eom_flag == ADD_CHAR)) return;
 
    update_pwm();   // if doing pwm temperature control
 
    if(1 || (com[port].com_port != 0) || (com[port].usb_port != 0)) {   // zork COM port in use: send bytes via serial port
-      flag = write(com[port].com_fd, com[port].xmit_buffer, x);
-if((eom_flag == EOM) || (eom_flag == FLUSH_COM)) {
-   fsync(com[port].com_fd);
-}
-      if(flag == x) written = 1;
+      flag = write(com[port].com_fd, com[port].xmit_buffer, com[port].x_offset);
+      if((eom_flag == EOM) || (eom_flag == FLUSH_COM)) {
+        fsync(com[port].com_fd);
+      }
+      if(flag == com[port].x_offset) written = 1;
       else          written = 0;
    }
 
-   x = 0;
+   com[port].x_offset = 0;
 
    if((flag == 0) || (written != 1)) {
       if(com_error_exit) {

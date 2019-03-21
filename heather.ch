@@ -4061,6 +4061,7 @@ struct COM_INFO {
 
    int user_set_baud;      // flag set if user set the port baud rate
    int user_set_ip;        // flag set if user set the IP address
+   int x_offset; 	   // DWH encapsulate the x offset variable here.
 };
 
 EXTERN struct COM_INFO com[NUM_COM_PORTS];   // the com port related variables
