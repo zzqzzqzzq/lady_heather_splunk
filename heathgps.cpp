@@ -33474,33 +33474,63 @@ void parse_scpi_status_test()
    scpi_gps = 0;
 
    if(strstr(scpi_status_line, "SELF TEST:")) {
-      if(strstr(scpi_status_line, "SELF TEST: OK")) scpi_self_test = 1;
       have_scpi_self_test = 1;
+      if(strstr(scpi_status_line, "SELF TEST: OK")) { 
+	scpi_self_test = 1;
+	critical_alarms &= ~CRIT_SCPI_SELFTEST; 
+      } else { 
+	critical_alarms |= CRIT_SCPI_SELFTEST; 
+      }
    }
 
    if(strstr(scpi_status_line, "INT PWR:")) {
-      if(strstr(scpi_status_line, "INT PWR: OK")) scpi_int_power = 1;
       have_scpi_int_power = 1;
+      if(strstr(scpi_status_line, "INT PWR: OK")) { 
+	scpi_int_power = 1;
+	critical_alarms &= ~CRIT_SCPI_POWER; 
+      } else { 
+	critical_alarms |= CRIT_SCPI_POWER;
+      }
    }
 
    if(strstr(scpi_status_line, "OVEN PWR:")) {
-      if(strstr(scpi_status_line, "OVEN PWR: OK")) scpi_oven_power = 1;
       have_scpi_oven_power = 1;
+      if(strstr(scpi_status_line, "OVEN PWR: OK")) {
+	scpi_oven_power = 1;
+        critical_alarms &= ~CRIT_SCPI_OVEN;
+      } else { 
+        critical_alarms |= CRIT_SCPI_OVEN;
+      }
    }
 
    if(strstr(scpi_status_line, "OCXO:")) {
-      if(strstr(scpi_status_line, "OCXO: OK")) scpi_ocxo = 1;
       have_scpi_ocxo = 1;
+      if(strstr(scpi_status_line, "OCXO: OK")) { 
+	scpi_ocxo = 1;
+        critical_alarms &= ~CRIT_SCPI_OCXO;
+     } else {
+        critical_alarms |= CRIT_SCPI_OCXO;
+     }
    }
 
    if(strstr(scpi_status_line, "EFC:")) {
-      if(strstr(scpi_status_line, "EFC: OK")) scpi_efc = 1;
       have_scpi_efc = 1;
+      if(strstr(scpi_status_line, "EFC: OK")) {
+	scpi_efc = 1;
+        critical_alarms &= ~CRIT_SCPI_EFC;
+     } else {
+        critical_alarms |= CRIT_SCPI_EFC;
+     }
    }
 
    if(strstr(scpi_status_line, "GPS RCV:")) {
-      if(strstr(scpi_status_line, "GPS RCV: OK")) scpi_gps = 1;
       have_scpi_gps = 1;
+      if(strstr(scpi_status_line, "GPS RCV: OK")) {
+	scpi_gps = 1;
+        critical_alarms &= ~CRIT_SCPI_GPS;
+     } else {
+        critical_alarms |= CRIT_SCPI_GPS;
+     }
    }
 }
 

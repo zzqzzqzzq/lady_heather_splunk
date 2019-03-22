@@ -4904,13 +4904,29 @@ int change;
          if(critical_alarms & CRIT_PWR)   strcat(log_text, "  Power:BAD");
          else                             strcat(log_text, "  Power:OK ");
       }
-      if(change & CRIT_FPGA) {
-         if(critical_alarms & CRIT_FPGA)  strcat(log_text, "  FPGA:BAD");
-         else                             strcat(log_text, "  FPGA:OK ");
+      if(change & CRIT_FPGA || change & CRIT_GPS || change & CRIT_SCPI_GPS ) {
+         if(critical_alarms & CRIT_FPGA)  strcat(log_text, "  FPGA/GPS:BAD");
+         else                             strcat(log_text, "  FPGA/GPS:OK ");
       }
-      if(change & CRIT_OCXO) {
-         if(critical_alarms & CRIT_OCXO)  strcat(log_text, "  OSC: BAD");
-         else                             strcat(log_text, "  OSC: OK ");
+      if(change & CRIT_OCXO || change & CRIT_RTC || change & CRIT_SCPI_OCXO ) {
+         if(critical_alarms & CRIT_OCXO)  strcat(log_text, "  OSC/RTC: BAD");
+         else                             strcat(log_text, "  OSC/RTC: OK ");
+      } 
+      if(change & CRIT_SCPI_SELFTEST) { 
+         if(critical_alarms & CRIT_SCPI_SELFTEST)  strcat(log_text, "  SELFTEST: BAD");
+         else                                      strcat(log_text, "  SELFTEST: OK ");
+      }
+      if(change & CRIT_SCPI_POWER) { 
+         if(critical_alarms & CRIT_SCPI_POWER)     strcat(log_text, "  INTPWR: BAD");
+         else                                      strcat(log_text, "  INTPWR: OK ");
+      }
+      if(change & CRIT_SCPI_OVEN) { 
+         if(critical_alarms & CRIT_SCPI_OVEN)      strcat(log_text, "  OVEN: BAD");
+         else                                      strcat(log_text, "  OVEN: OK ");
+      }
+      if(change & CRIT_SCPI_EFC) { 
+         if(critical_alarms & CRIT_SCPI_EFC)       strcat(log_text, "  EFC: BAD");
+         else                                      strcat(log_text, "  EFC: OK ");
       }
       write_log_tow(1);
    }

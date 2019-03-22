@@ -105,6 +105,15 @@ EXTERN int dont_reset_phase;     // used when reloading adev queue data
 #define CRIT_GPS          0x0008
 #define CRIT_OCXO         0x0010
 #define CRIT_RTC          0x0010
+
+// DWH Appears none of the Critical SCPI "errors" are flagged as errors
+#define CRIT_SCPI_SELFTEST 0x0020 // DWH SCPI Self Test Failed
+#define CRIT_SCPI_POWER    0x0040 // DWH SCPI INT Power Flag
+#define CRIT_SCPI_OVEN     0x0080 // DWH SCPI Oven Bad
+#define CRIT_SCPI_OCXO     0x0010 // DWH SCPI - Same as CRIT_OCXO
+#define CRIT_SCPI_EFC      0x0100 // DWH EFC Failure
+#define CRIT_SCPI_GPS      0x0008 // DWH SCPI - Same as CRIT_GPS
+
 #define CRIT_ALL          0xFFFF
 
 #define MINOR_OSC_AGE     0x0001 // minor_alarms
@@ -122,7 +131,7 @@ EXTERN int dont_reset_phase;     // used when reloading adev queue data
 #define MINOR_ALMANAC     0x0800
 #define MINOR_PPS_SKIPPED 0x1000
 #define MINOR_UNKNOWN     0xE000
-#define MINOR_ALL         0xFFFF
+#define MINOR_ALL         0xFFFFFFFF	// DWH Expand MINOR_ALL to cover the below additional alarm flags
 
 //  Additional alarm flags
 #define MINOR_JL_PHASE    0x10000
