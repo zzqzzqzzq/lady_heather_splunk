@@ -32561,10 +32561,13 @@ if(debug_file) fprintf(debug_file, "### hardware status:%04X\n", status);
         have_eeprom = 1;
       }
       else {
-         critical_alarms = 0x0000;
+         // critical_alarms = 0x0000;   // DWH Toggle critical_alarms like nortel does it.
          if(status & 0x003E) critical_alarms |= CRIT_PWR;       // power
+         else                critical_alarms &= (~CRIT_PWR);
          if(status & 0x0300) critical_alarms |= CRIT_GPS;       // GPS
+         else                critical_alarms &= (~CRIT_GPS);
          if(status & 0x1000) critical_alarms |= CRIT_OCXO;      // ref failure
+         else                critical_alarms &= (~CRIT_OCXO);
 
          if(status & 0x00C0) minor_alarms |= MINOR_OSC_AGE;     // EFC limit
          else                minor_alarms &= (~MINOR_OSC_AGE);  // EFC limit
