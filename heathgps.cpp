@@ -8884,7 +8884,7 @@ request_self_tests(1);
       queue_scpi_cmd("*CLS", SCPI_CLS_MSG);
       queue_scpi_cmd("*IDN?", SCPI_ID_MSG);
       if(detect_rcvr_type || (scpi_type == HP_TYPE) || (scpi_type == HP_TYPE2)) {  // gggg
-         queue_scpi_cmd("PTIME:TCOD:CONT 0", SCPI_NULL_MSG);     // for Z3816 HP5xxxx
+         queue_scpi_cmd("PTIME:TCOD:CONT 1", SCPI_NULL_MSG);     // for Z3816 HP5xxxx     // DWH - Re-enable continuous timecode from REF1
          queue_scpi_cmd(":SYST:COMM:SER1:PACE NONE", SCPI_NULL_MSG);   // for Z3816 HP5xxxx
          queue_scpi_cmd(":FORM:CONT:DATA ASC", SCPI_NULL_MSG);   // ascii data  Z3816 HP5xxxx 
          set_rcvr_tzone(0,0);
