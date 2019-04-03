@@ -5,6 +5,9 @@ heather.o
 heathgps.o
 heathmsc.o
 heathui.o
+splunk.o
+
+
 run-notes.txt
 run.sh
 rinex.log
