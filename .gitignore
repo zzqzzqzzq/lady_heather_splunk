@@ -10,4 +10,5 @@ run.sh
 rinex.log
 run.peace.sh
 tblog.xml
-
+stest
+splunk_json
