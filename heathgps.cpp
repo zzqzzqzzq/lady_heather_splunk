@@ -12953,6 +12953,10 @@ else if(have_temperature) {
    show_log_state();         // show the logging mode
    show_param_values(0);     // update alarm and data value displays
 
+#ifdef SPLUNK
+   splunk_log(); 
+#endif
+
    write_log_changes();      // write important state changes to log file
 
    if((last_utc_ofs == 0) && have_utc_ofs) {  // we just got the UTC offset

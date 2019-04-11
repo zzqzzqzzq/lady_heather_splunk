@@ -5403,3 +5403,6 @@ void start_calc_zoom(int why);
 void rpn_show(void);
 void show_plot_stats(void);
 
+#ifdef SPLUNK
+void splunk_log(void);
+#endif
