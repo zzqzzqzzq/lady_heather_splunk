@@ -1,12 +1,7 @@
 .gdbinit
 gdbinit
 heather
-heather.o
-heathgps.o
-heathmsc.o
-heathui.o
-splunk.o
-
+*.o
 
 run-notes.txt
 run.sh
@@ -15,3 +10,12 @@ run.peace.sh
 tblog.xml
 stest
 splunk_json
+splunk_debug.txt
+
+post.sh
+proto
+
+ed.sh
+funcs
+val.sh
+
