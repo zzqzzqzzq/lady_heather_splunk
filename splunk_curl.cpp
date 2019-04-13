@@ -9,6 +9,7 @@
 #include <string.h>
 #include <curl/curl.h>
 
+#include "parson.h"
 #include "splunk.h"
 
 // Used for retrieving responses from via libCURL
@@ -37,19 +38,22 @@ static size_t splunk_post_response_callback(void *contents, size_t size, size_t 
 	return(realsize);			// I wonder if this is really paid attention to.....
 }
 
-int splunk_json_send(struct JsonStruct *buf, char *HEC_TOKEN, char *HEC_URL) { 
+// Mostly this too...
+int splunk_json_send(char *HEC_TOKEN, char *HEC_URL, JSON_Object *json_buffer) {
+
 	CURL *h_curl;
 	CURLcode res;
 
 	char	success_string[] = "{\"text\":\"Success\",\"code\":0}";
 	char	authorization_token[1024]; 
-	struct curl_slist *headers = NULL;
+	struct 	curl_slist *headers = NULL;
 
-	struct MemoryStruct chunk;
+	struct 	MemoryStruct chunk;
+	int 	retval; 
+	char	*serialized_string;
 
-	int retval; 
-
-	if( strlen(buf->buffer) == 0 ) { 
+	serialized_string = json_serialize_to_string_pretty( json_object_get_wrapping_value( json_buffer ) );
+	if( strlen(serialized_string) == 0 ) { 
 		printf("ERROR: splunk_json_send() called, with no json text."); 
 		return(1); 
 	}
@@ -81,7 +85,7 @@ int splunk_json_send(struct JsonStruct *buf, char *HEC_TOKEN, char *HEC_URL) {
 		curl_easy_setopt(h_curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
 
 		// Data to send in POST 
-		curl_easy_setopt(h_curl, CURLOPT_POSTFIELDS, buf->buffer);
+		curl_easy_setopt(h_curl, CURLOPT_POSTFIELDS, serialized_string);
  
 		/* Perform the request, res will get the return code */ 
 		res = curl_easy_perform(h_curl);
@@ -115,6 +119,7 @@ int splunk_json_send(struct JsonStruct *buf, char *HEC_TOKEN, char *HEC_URL) {
 		printf("ERROR: libCURL easy_init failed, dropping complete json event..."); 
 	}
 
+	json_free_serialized_string( serialized_string ); 
 	free(chunk.memory);
 	return(retval);
 }
