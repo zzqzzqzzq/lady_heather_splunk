@@ -39,7 +39,8 @@ void splunk_log(void) {
 	char		noon[16];
 	char		set[16];
 
-	int prn;
+	int 		prn;
+	int		num_sats;
 
 	root_object = json_value_get_object( json_value_init_object() );
 	event_object = splunk_json_initialize( root_object ); 	
@@ -235,6 +236,7 @@ void splunk_log(void) {
 	log_var_int( event_object, max_sig_level );
 
 	// Satellite information.
+	num_sats = 0; 
 	for(prn=0; prn<=MAX_PRN; prn++) {
 		if( sat[prn].tracking != 0 ) { 
 			sat_object = json_value_get_object( json_value_init_object() ); 
@@ -244,9 +246,13 @@ void splunk_log(void) {
 
 			sprintf(prn_name, "sat_%04d", prn); 
 			json_object_set_value( event_object, prn_name, json_object_get_wrapping_value( sat_object ) );
-
+		}
+		if( sat[prn].tracking > 0 ) { 
+			num_sats++; 
 		}
 	}
+
+	log_var_int( event_object, num_sats );
 
 	sat_object = json_value_get_object( json_value_init_object() ); 
 	splunk_log_sat( sat_object, SUN_PRN ); 
