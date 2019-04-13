@@ -1,3 +1,45 @@
+* Splunk support.  4/13/2019 - David Holland
+
+  This is a relatively crude hack to log the data that's normally displayed 
+  on the GUI of Lady Heather into Splunk. 
+
+  The tbolt log file looked to be excessively difficult to parse, and I didn't 
+  want to make excessive changes to the Lady Heather code.      I'm also
+  using a Raspberry PI-3 for monitoring, and wished to keep writing to the flash
+  drive to a minimum.
+
+  As written, the code is Lady Heather v6.14 Beta.
+
+  The code has only been tested against a Lucent KS-24361 pair, and only logs
+  things that I'm aware of, that the Lucent pair "does".   If you're using it 
+  against a different type of hardware supported by Lady Heather, who knows if 
+  what it logs will be of interest.
+
+  No idea if it works against anything besides Linux on a Raspberry PI-3.
+
+  Changes:
+
+  * It fixes a bug in the /ee command. Mark Sims is aware of, and will likely have
+    a fix in a later beta version.
+
+  * It re-enables the continous time code from REF-1.
+
+  * Fixes a bug(?) in that SCPI Selftest failures do not get flagged in the 
+    critical_alarms variable.
+
+  * The Splunk configuration is hard coded.  
+    It uses the Splunk HTTP Event Collector for data collection. 
+    The URL, and TOKEN are both hard coded at the top of splunk.cpp, and 
+    will likely need adjustment by you and/or your Splunk administrator.
+
+  * It uses libCurl for the HTTP POST functionality.
+
+  * It uses Parson JSON library for Data to JSON formatting. 
+    https://github.com/kgabis/parson
+
+
+
+
 Lady Heather Version 4.0 (with Linux and macOS (OS/X) support)
 
 To use this program on Linux, macOS, and FreeBSD:
