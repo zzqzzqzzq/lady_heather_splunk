@@ -18,7 +18,15 @@ ifeq ($(OS),Linux)
 # WARNS = -Wno-write-strings 
 WARNS = -Wno-write-strings -Wall -Wno-unused-but-set-variable -Wno-unused-variable -Wno-format-overflow
 
+# all: test
 all: heather
+
+# SPLUNK_FLAGS	= -DDEBUG -DTEST -Iparson
+# SPLUNK_FLAGS	= -DDEBUG -Iparson
+SPLUNK_FLAGS	= -Iparson
+SPLUNK_LIBS	= splunk_json.o splunk_curl.o parson.o
+SPLUNK_OBJS 	= splunk.o $(SPLUNK_LIBS)
+OBJS		= heather.o heathmsc.o heathui.o heathgps.o $(SPLUNK_OBJS)
 
 heather.o: heather.cpp heather.ch heathfnt.ch makefile
 		  $(CC) -c heather.cpp $(WARNS)
@@ -30,13 +38,28 @@ heathui.o: heathui.cpp heather.ch heathfnt.ch makefile
 		  $(CC) -c heathui.cpp $(WARNS)
 
 heathgps.o: heathgps.cpp heather.ch heathfnt.ch makefile
-		  $(CC) -c heathgps.cpp $(WARNS)
+		  $(CC) -c heathgps.cpp $(WARNS) -DSPLUNK
 
-heather: heather.o heathmsc.o heathui.o heathgps.o
-		  $(CC) heather.o heathui.o heathgps.o heathmsc.o -o heather -lm -lX11
+splunk.o: splunk.cpp heather.ch heathfnt.ch makefile
+		  $(CC) -c splunk.cpp $(WARNS) $(SPLUNK_FLAGS)
+
+splunk_json.o: splunk_json.cpp heather.ch makefile
+		  $(CC) -c splunk_json.cpp $(WARNS) $(SPLUNK_FLAGS)
+
+parson.o: parson/parson.c parson/parson.h heather.ch makefile
+		  $(CC) -c parson/parson.c $(WARNS) $(SPLUNK_FLAGS)
+
+splunk_curl.o: splunk_curl.cpp heather.ch makefile
+		  $(CC) -c splunk_curl.cpp $(WARNS) $(SPLUNK_FLAGS)
+
+heather: $(OBJS)
+		  $(CC) $(OBJS) -o heather -lm -lX11 -lcurl
+
+test: $(SPLUNK_LIBS)
+		  $(CC) $(SPLUNK_LIBS) -o stest -lefence -lcurl
 
 clean:
-		  rm heather.o heathui.o heathgps.o heathmsc.o heather
+		  rm heather $(OBJS)
 
 endif
 
